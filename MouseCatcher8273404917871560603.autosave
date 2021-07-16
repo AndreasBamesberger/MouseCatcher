@@ -1,66 +1,48 @@
 // TODO: harder difficulty: follower goes toward center between cursor and food
 
 class Cursor {
-  int diameter;
+  int diameter = 20;
   PImage cursor_symbol;
 
-  Cursor(int d) {
-    diameter = d;
-  }
-  void load() {
-    cursor_symbol = loadImage("player.png");
+  Cursor() {
+    cursor_symbol = loadImage("../player.png");
     cursor_symbol.resize(diameter, diameter);
-  }
-  void display() {
     cursor(cursor_symbol);
   }
 }
 
 class Follower {
-  int colour;
-  int diameter;
-  float x;
-  float y;
+  int colour = #96C465;
+  int diameter = 50;
+  float x = 500, y = 500;
   float distance;
   PShape symbol;
 
-  Follower(int c, int d, float pos_x, float pos_y) { //<>//
-    colour = c;
-    diameter = d;
-    x = pos_x;
-    y = pos_y;
-  }
-  
-  void display() {
+  Follower() {
     fill(colour);
     symbol = createShape(ELLIPSE, x, y, diameter, diameter);
   }
 }
 
 class Food {
-  int colour;
+  int colour = #0909FF;
   PShape symbol;
-  int diameter;
-  float x; 
-  float y;
+  int diameter = 20;
+  float x, y;
   float distance;
 
-  Food(int c, int d) {
-    colour = c;
-    diameter = d;
-    random_pos();
-  }
-  
-  void display() {
-    fill(colour);
-    symbol = createShape(ELLIPSE, x, y, 20, 20);
-  }
-  
-  void random_pos() {
+  Food() {
+    fill(0, 0, 255);
     x = random(diameter, field_width - diameter * 2);
     y = random(diameter, field_height - diameter * 2);
+
+    symbol = createShape(ELLIPSE, x, y, 20, 20);
   }
 }
+
+Cursor cursor;
+Follower follower;
+Food food;
 
 int colour_text = #2C6226;
 int colour_background = #3D3C3E;
@@ -75,10 +57,6 @@ float velocity = velocity_start;
 int food_count = 0;
 
 boolean game_over = false;
-
-Follower follower = new Follower(#96C465, 50, 500, 500);
-Food food = new Food(#0909FF, 20);
-Cursor cursor = new Cursor(20);
 
 void print_debug() {
   textSize(20);
@@ -151,24 +129,32 @@ void keyPressed() {
   if (int(key) == 32) {
     game_over = false;
   }
+  //println("pressed " + int(key) + " " + keyCode);
+}
+/*
+void keyTyped() {
+  println("typed " + int(key) + " " + keyCode);
 }
 
+void keyReleased() {
+  println("released " + int(key) + " " + keyCode);
+}
+*/
+
 void setup() {
+  print("setup\n");
   size(1000, 800);
   frameRate(60);
-  
-  cursor.load();
-  cursor.display();
-
-  follower.display();
-  food.display();
 }
 
 void draw() {
+  print("draw\n");
   if (!game_over) {
     background(colour_background);
-  
+    print("before follower shape\n");
+    print("follower.diameter = \n" + follower.diameter);
     shape(follower.symbol);
+    print("before food shape\n");
     shape(food.symbol);
   
     follow();
@@ -177,8 +163,7 @@ void draw() {
     boolean caught = detect_collision(follower.symbol);
     
     if (took_food) {
-      food.random_pos();
-      food.display();
+      // create_food();
       food_count += 1;
       velocity += 0.3;
     }
